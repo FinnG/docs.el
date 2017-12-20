@@ -181,9 +181,7 @@ class DocFile(object):
     def __init__(self, fname):
         self.fname = fname
         self.xml_root = xml.etree.ElementTree.parse(fname).getroot()
-        self.definition_root = self.xml_root[0]
-        assert self.definition_root.tag == "compounddef"
-        
+        self.definition_root = self.xml_root.find("compounddef")
         self.sections = self.load_sections(self.definition_root)
 
     def load_sections(self, definition_root):
@@ -195,7 +193,7 @@ class DocFile(object):
 
         return sections
 
-    def get_doc_definition(self, ref):
+    def get_definition(self, ref):
         kind = ref["kind"]
         section = self.sections[kind]
 
@@ -219,7 +217,7 @@ def main():
     s = s[0]
     
     f = DocFile(s["file"])
-    print(f.get_doc_definition(s).full())
+    print(f.get_definition(s).full())
 
 if __name__=='__main__':
     main()
