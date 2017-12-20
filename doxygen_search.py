@@ -3,7 +3,7 @@ import xml.etree.ElementTree
 import sys
 import argparse
 
-class Index(object):
+class DocsIndex(object):
     def __init__(self, directory, fname="index.xml"):
         self.directory = directory
         index_fname = os.path.join(directory, fname)
@@ -42,7 +42,7 @@ class Index(object):
                                          "refid": member.attrib["refid"],
                                          "kind": kind})
             
-class DocDefinition(object):
+class DocsDefinition(object):
     def __init__(self, definition):
         self.definition = definition
 
@@ -135,7 +135,7 @@ class DocDefinition(object):
 
         return string
 
-class DocFile(object):
+class DocsFile(object):
     def __init__(self, fname):
         self.fname = fname
         self.xml_root = xml.etree.ElementTree.parse(fname).getroot()
@@ -158,7 +158,7 @@ class DocFile(object):
         for definition in section:
             if definition.attrib.get("id") != ref["refid"]: continue
 
-            return DocDefinition(definition)
+            return DocsDefinition(definition)
         return None
 
 def parse_options(argv):
@@ -176,7 +176,7 @@ def parse_options(argv):
 
 def main():
     options = parse_options(sys.argv)
-    i = Index(options['xml'])
+    i = DocsIndex(options['xml'])
     s = i.doc_items.get(options['symbol'])
 
     if not s:
@@ -184,7 +184,7 @@ def main():
         sys.exit(0)
     s = s[0]
     
-    f = DocFile(s["file"])
+    f = DocsFile(s["file"])
 
     if options["type"] == "full":
         print(f.get_definition(s).full())
