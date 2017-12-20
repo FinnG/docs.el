@@ -176,7 +176,7 @@ class DocDefinition(object):
         string += " \nParams: \n%s" % "\n".join(param_strs) if param_strs else ""
 
         return string
-    
+
 class DocFile(object):
     def __init__(self, fname):
         self.fname = fname
@@ -204,6 +204,7 @@ class DocFile(object):
 
             return DocDefinition(definition)
         return None
+
 def main():
     import sys
     path = sys.argv[1]
