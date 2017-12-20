@@ -41,49 +41,7 @@ class Index(object):
             self.doc_items[name].append({"file": self._filename_from_compound(compound),
                                          "refid": member.attrib["refid"],
                                          "kind": kind})
-
-    def find_doc(self, doc_item):
-        self.doc_raw = xml.etree.ElementTree.parse(doc_item["file"]).getroot()
-
-        compound_def = self.doc_raw[0]
-        assert compound_def.tag == "compounddef"
-
-        section = self.find_doc_section(compound_def, doc_item["kind"])
-        d = self.find_member_def(section, doc_item["refid"])
-        return d
-
-    def find_doc_section(self, compound_def, kind):
-        for section in compound_def:
-            if kind == section.attrib.get("kind"):
-                return section
-
-        import pdb; pdb.set_trace()
-        return None
-
-    def find_brief_doc(self, member_def):
-        for section in member_def:
-            if section.tag != "briefdescription":
-                continue
-
-            return section[0].text
-
-
-    def find_member_def(self, section, ref):
-        for x in section:
-            if x.attrib["id"] == ref:
-                return x
-
-        import pdb; pdb.set_trace()
-
-    def symbol_to_brief(self, symbol):
-        doc_item = self.doc_items.get(symbol)[0]
-        if not doc_item: return "No documentation available"
-
-        doc = self.find_doc(doc_item)
-        brief = self.find_brief_doc(doc)
-        return brief.strip()
             
-
 class DocDefinition(object):
     def __init__(self, definition):
         self.definition = definition
