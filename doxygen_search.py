@@ -1,7 +1,7 @@
 import os
 import xml.etree.ElementTree
-
-functions = {}
+import sys
+import argparse
 
 class Index(object):
     def __init__(self, directory, fname="index.xml"):
@@ -203,21 +203,35 @@ class DocFile(object):
             return DocDefinition(definition)
         return None
 
+def parse_options(argv):
+    parser = argparse.ArgumentParser(description='Description of your program')
+    parser.add_argument('-s','--symbol',
+                        help='The symbol to look up documentation for',
+                        required=True)
+    parser.add_argument('-t','--type',
+                        help='The type of documentation to return',
+                        default="full")
+    parser.add_argument('-x','--xml',
+                        help="The path to Doxygen's XML output",
+                        default=os.path.join(os.getcwd(), 'xml'))
+    return vars(parser.parse_args())
+
 def main():
-    import sys
-    path = sys.argv[1]
-    symbol = sys.argv[2]
+    options = parse_options(sys.argv)
+    i = Index(options['xml'])
+    s = i.doc_items.get(options['symbol'])
 
-    i = Index(path)
-
-    s = i.doc_items.get(symbol)
     if not s:
-        print("No documentation available.")
+        print("No documentation available.\n")
         sys.exit(0)
     s = s[0]
     
     f = DocFile(s["file"])
-    print(f.get_definition(s).full())
+
+    if options["type"] == "full":
+        print(f.get_definition(s).full())
+    else:
+        print(f.get_definition(s).brief())
 
 if __name__=='__main__':
     main()
